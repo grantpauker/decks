@@ -67,6 +67,8 @@ int main(int argc, char **argv)
         std::ostringstream index_str;
         index_str << "(" << index << ")";
         print_string_centered(-1, index_str.str());
+        print_string_centered(-3, deck.name);
+
         c = getch();
         switch (c)
         {

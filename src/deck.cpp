@@ -27,6 +27,7 @@ void Deck::load(std::string filename)
         std::cerr << "Unable to open file, " << filename;
         exit(EXIT_FAILURE);
     }
+    name = filename.substr(0, filename.find_last_of("."));
     TokenKind cur_tok = TokenKind::TERM;
     std::string cur_line;
     Card card_buf = Card("", "", false, false);
