@@ -69,6 +69,7 @@ void Deck::load(std::string filename)
             break;
         }
     }
+    add_card(card_buf);
     file.close();
 }
 void Deck::write(std::string filename)
