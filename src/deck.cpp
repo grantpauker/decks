@@ -42,6 +42,11 @@ void Deck::load(std::string filename)
                 card_buf.definition += cur_line.substr(1);
                 break;
             }
+            else if (cur_line[0] == '*')
+            {
+                card_buf.starred = true;
+                cur_line = cur_line.substr(1);
+            }
             card_buf.term += cur_line;
 
             break;
@@ -51,9 +56,15 @@ void Deck::load(std::string filename)
                 cur_tok = TokenKind::TERM;
                 add_card(card_buf);
                 card_buf = Card("", "", false, false);
+                if (cur_line[0] == '*')
+                {
+                    card_buf.starred = true;
+                    cur_line = cur_line.substr(1);
+                }
                 card_buf.term += cur_line;
                 break;
             }
+
             card_buf.definition += "\n" + cur_line.substr(1);
             break;
         }
@@ -71,7 +82,7 @@ void Deck::write(std::string filename)
     }
     for (auto card : cards)
     {
-        file << card.term << std::endl;
+        file << (card.starred ? "*" : "") << card.term << std::endl;
         std::stringstream ss(card.definition);
         std::string buf;
         while (std::getline(ss, buf, '\n'))

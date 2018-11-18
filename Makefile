@@ -3,7 +3,7 @@ CC=g++
 CXXFLAGS=-lncurses
 
 all: src/*.o
-	$(CC) $(CXXFLAGS) src/*.cpp
+	$(CC) $(CXXFLAGS) src/*.cpp -o decks
 src/%.o: src/%.cpp
 	$(CC) $(CXXFLAGS) -c $^
 

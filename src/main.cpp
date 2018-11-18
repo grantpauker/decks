@@ -8,16 +8,20 @@
 #include "deck.hpp"
 #include "gui.hpp"
 
-void write_deck(std::string filename, Deck deck)
+int main(int argc, char **argv)
 {
-    deck.print();
-    return;
-}
-
-int main(void)
-{
+    std::string filename;
+    if (argc == 1)
+    {
+        fprintf(stderr, "No file specified.\n");
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        filename = argv[1];
+    }
     Deck deck;
-    deck.load("example");
+    deck.load(filename);
     int index = 0;
     WINDOW *mainwin;
 
@@ -68,15 +72,20 @@ int main(void)
         {
         case 'j':
         case 'k':
+        case KEY_DOWN:
+        case KEY_UP:
             deck.cards[index].is_flipped = !deck.cards[index].is_flipped;
             break;
+        case KEY_LEFT:
         case 'h':
             index -= (index > 0);
             break;
+        case KEY_RIGHT:
         case 'l':
             index += (index < deck.cards.size() - 1);
             break;
         case ';':
+        case '/':
             deck.cards[index].starred = !deck.cards[index].starred;
             break;
         case 'q':
@@ -89,6 +98,6 @@ int main(void)
     delwin(mainwin);
     endwin();
     refresh();
-    deck.write("out");
+    deck.write(filename);
     return EXIT_SUCCESS;
 }
