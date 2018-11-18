@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     std::string filename;
     if (argc == 1)
     {
-        fprintf(stderr, "No file specified.\n");
+        std::cerr << "No file specified.\n";
         exit(EXIT_FAILURE);
     }
     else
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     setlocale(LC_ALL, "");
     if ((mainwin = initscr()) == NULL)
     {
-        fprintf(stderr, "Error initialising ncurses.\n");
+        std::cerr << "Error initialising ncurses.\n";
         exit(EXIT_FAILURE);
     }
     clear();
@@ -74,6 +74,7 @@ int main(int argc, char **argv)
         case 'k':
         case KEY_DOWN:
         case KEY_UP:
+        case ' ':
             deck.cards[index].is_flipped = !deck.cards[index].is_flipped;
             break;
         case KEY_LEFT:

@@ -24,8 +24,8 @@ void Deck::load(std::string filename)
     std::string buf;
     if (!file)
     {
-        std::cout << "Unable to open file";
-        exit(1);
+        std::cerr << "Unable to open file, " << filename;
+        exit(EXIT_FAILURE);
     }
     TokenKind cur_tok = TokenKind::TERM;
     std::string cur_line;
@@ -78,8 +78,8 @@ void Deck::write(std::string filename)
     file.open(filename);
     if (!file)
     {
-        std::cout << "Unable to open file";
-        exit(1);
+        std::cerr << "Unable to open file, " << filename;
+        exit(EXIT_FAILURE);
     }
     for (auto card : cards)
     {

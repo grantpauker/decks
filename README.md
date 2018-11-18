@@ -2,7 +2,7 @@
 An ncurses flash card tui
 
 # creating flashcards
-Create a flashcard files according to the following format (see the example file for an example):
+Create flashcard files (with the `.dk` extension) according to the following format (see the example.dk file for an example):
 ```
 [*]TERM1
     DEFINITION1
