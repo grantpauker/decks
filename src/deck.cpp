@@ -1,8 +1,8 @@
-#include "deck.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
-
+#include <assert.h>
+#include "deck.hpp"
 Deck::Deck(std::string name, std::vector<Card> cards) : name(name), cards(cards) {}
 Deck::Deck(std::string name) : name(name) {}
 Deck::Deck() {}
@@ -22,18 +22,13 @@ void Deck::load(std::string filename)
     std::ifstream file;
     file.open(filename);
     std::string buf;
-    if (!file)
-    {
-        std::cerr << "Unable to open file, " << filename;
-        exit(EXIT_FAILURE);
-    }
+    assert(file);
     name = filename.substr(0, filename.find_last_of("."));
     TokenKind cur_tok = TokenKind::TERM;
     std::string cur_line;
     Card card_buf = Card("", "", false, false);
     while (std::getline(file, cur_line))
     {
-
         switch (cur_tok)
         {
         case TokenKind::TERM:
@@ -49,7 +44,6 @@ void Deck::load(std::string filename)
                 cur_line = cur_line.substr(1);
             }
             card_buf.term += cur_line;
-
             break;
         case TokenKind::DEFINITION:
             if (cur_line[0] != '\t')
@@ -65,7 +59,6 @@ void Deck::load(std::string filename)
                 card_buf.term += cur_line;
                 break;
             }
-
             card_buf.definition += "\n" + cur_line.substr(1);
             break;
         }
@@ -77,11 +70,7 @@ void Deck::write(std::string filename)
 {
     std::ofstream file;
     file.open(filename);
-    if (!file)
-    {
-        std::cerr << "Unable to open file, " << filename;
-        exit(EXIT_FAILURE);
-    }
+    assert(file);
     for (auto card : cards)
     {
         file << (card.starred ? "*" : "") << card.term << std::endl;

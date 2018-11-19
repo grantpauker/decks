@@ -1,15 +1,15 @@
-
-#include <ncurses.h>
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <ncurses.h>
 #include "card.hpp"
 #include "deck.hpp"
 #include "gui.hpp"
 
 int main(int argc, char **argv)
 {
+    //Handle file input
     std::string filename;
     if (argc == 1)
     {
@@ -20,57 +20,50 @@ int main(int argc, char **argv)
     {
         filename = argv[1];
     }
+
+    //Load deck from file
     Deck deck;
     deck.load(filename);
+
+    //Initialize gui
+    Gui gui;
+    gui.init();
+
+    //Set variables
+    int key;
     int index = 0;
-    WINDOW *mainwin;
+    int offset = 0;
 
-    setlocale(LC_ALL, "");
-    if ((mainwin = initscr()) == NULL)
+    //Main loop
+    while (!gui.is_done)
     {
-        std::cerr << "Error initialising ncurses.\n";
-        exit(EXIT_FAILURE);
-    }
-    clear();
-    noecho();
-    cbreak();
-
-    keypad(mainwin, TRUE);
-    refresh();
-    start_color();
-    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
-
-    bool exit = true;
-    int c;
-    curs_set(0);
-    while (exit)
-    {
-        int offset = 0;
+        //Display card and other info
         if (!deck.cards[index].is_flipped)
         {
-            offset = print_nstring_centered(deck.cards[index].term);
+            offset = gui.print_nstring_centered(deck.cards[index].term);
         }
         else
         {
-            offset = print_nstring_centered(deck.cards[index].definition);
+            offset = gui.print_nstring_centered(deck.cards[index].definition);
         }
         if (deck.cards[index].starred)
         {
             attron(COLOR_PAIR(1));
-            print_string_centered(offset, "●");
+            gui.print_string_centered(offset, "●");
             attroff(COLOR_PAIR(1));
         }
         else
         {
-            print_string_centered(offset, "○");
+            gui.print_string_centered(offset, "○");
         }
-        std::ostringstream index_str;
-        index_str << "(" << index << ")";
-        print_string_centered(-1, index_str.str());
-        print_string_centered(-3, deck.name);
 
-        c = getch();
-        switch (c)
+        std::string index_str = "(" + std::to_string(index) + ")";
+        gui.print_string_centered(-1, index_str);
+        gui.print_string_centered(-3, deck.name);
+
+        //Handle keypresses
+        key = getch();
+        switch (key)
         {
         case 'j':
         case 'k':
@@ -92,15 +85,16 @@ int main(int argc, char **argv)
             deck.cards[index].starred = !deck.cards[index].starred;
             break;
         case 'q':
-            exit = false;
+            gui.is_done = true;
             break;
         }
-        erase();
-        refresh();
+
+        //Update gui
+        gui.update();
     }
-    delwin(mainwin);
-    endwin();
-    refresh();
+
+    //Close gui and save deck
+    gui.close();
     deck.write(filename);
     return EXIT_SUCCESS;
 }
