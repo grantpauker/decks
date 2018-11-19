@@ -32,34 +32,34 @@ int main(int argc, char **argv)
     //Set variables
     int key;
     int index = 0;
-    int offset = 0;
 
     //Main loop
     while (!gui.is_done)
     {
+        int offset = 0;
         //Display card and other info
         if (!deck.cards[index].is_flipped)
         {
-            offset = gui.print_nstring_centered(deck.cards[index].term);
+            offset = gui.print_centered(offset, deck.cards[index].term);
         }
         else
         {
-            offset = gui.print_nstring_centered(deck.cards[index].definition);
+            offset = gui.print_centered(offset, deck.cards[index].definition);
         }
         if (deck.cards[index].starred)
         {
             attron(COLOR_PAIR(1));
-            gui.print_string_centered(offset, "●");
+            gui.print_centered(offset, "●");
             attroff(COLOR_PAIR(1));
         }
         else
         {
-            gui.print_string_centered(offset, "○");
+            gui.print_centered(offset, "○");
         }
 
         std::string index_str = "(" + std::to_string(index) + ")";
-        gui.print_string_centered(-1, index_str);
-        gui.print_string_centered(-3, deck.name);
+        gui.print_centered(-1, index_str);
+        gui.print_centered(-3, deck.name);
 
         //Handle keypresses
         key = getch();

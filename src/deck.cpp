@@ -19,11 +19,13 @@ void Deck::print()
 }
 void Deck::load(std::string filename)
 {
+    // load file and get name of deck
     std::ifstream file;
     file.open(filename);
-    std::string buf;
-    assert(file);
     name = filename.substr(0, filename.find_last_of("."));
+    assert(file);
+
+    std::string buf;
     TokenKind cur_tok = TokenKind::TERM;
     std::string cur_line;
     Card card_buf = Card("", "", false, false);
@@ -34,6 +36,10 @@ void Deck::load(std::string filename)
         case TokenKind::TERM:
             if (cur_line[0] == '\t')
             {
+                if (card_buf.term[0] == '\n')
+                {
+                    card_buf.term = card_buf.term.substr(1);
+                }
                 cur_tok = TokenKind::DEFINITION;
                 card_buf.definition += cur_line.substr(1);
                 break;
@@ -43,7 +49,7 @@ void Deck::load(std::string filename)
                 card_buf.starred = true;
                 cur_line = cur_line.substr(1);
             }
-            card_buf.term += cur_line;
+            card_buf.term += "\n" + cur_line;
             break;
         case TokenKind::DEFINITION:
             if (cur_line[0] != '\t')

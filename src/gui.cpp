@@ -1,8 +1,15 @@
 #include <iostream>
-#include <ncurses.h>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <iterator>
 #include <assert.h>
+#include <ncurses.h>
 #include "gui.hpp"
-Gui::Gui()
+#include "utils.hpp"
+
+Gui::Gui(int max_len) : max_len(max_len)
 {
     is_done = false;
 }
@@ -40,31 +47,49 @@ int Gui::get_center_y()
 {
     return LINES / 2;
 }
-std::size_t Gui::strlen_utf8(std::string str)
+
+int Gui::print_centered(int offset, std::vector<std::string> strings)
 {
-    std::size_t len = 0;
-    for (char c : str)
+    for (auto str : strings)
     {
-        if ((c & 0xC0) != 0x80)
-        {
-            ++len;
-        }
+        offset = print_centered(offset, str);
     }
-    return len;
+    return offset;
 }
-void Gui::print_string_centered(int offset, std::string str)
+int Gui::print_centered(int offset, std::string str)
 {
-    mvprintw(get_center_y() + offset, get_center_x() - (strlen_utf8(str) / 2), str.c_str());
+    if (str.find('\n') != std::string::npos)
+    {
+        std::vector<std::string> strings = split_string(str, '\n');
+        offset = print_centered(offset, strings);
+        return offset;
+    }
+    else
+    {
+        offset = print_wrapped(offset, str);
+        return offset;
+    }
 }
-int Gui::print_nstring_centered(std::string str)
+
+int Gui::print_wrapped(int offset, std::string str)
 {
     std::stringstream ss(str);
     std::string buf;
-    int offset = 0;
-    while (std::getline(ss, buf, '\n'))
+    std::string word;
+    while (std::getline(ss, word, ' '))
     {
-        print_string_centered(offset, buf);
-        offset++;
+        if (buf.length() + word.length() > max_len)
+        {
+            mvaddstr(get_center_y() + offset, get_center_x() - (strlen_utf8(buf) / 2), buf.c_str());
+            buf = word;
+            offset++;
+        }
+        else
+        {
+            buf += " " + word;
+        }
     }
-    return offset;
+    mvaddstr(get_center_y() + offset, get_center_x() - (strlen_utf8(buf) / 2), buf.c_str());
+
+    return offset + 1;
 }
